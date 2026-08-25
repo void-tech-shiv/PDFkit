@@ -1,0 +1,28 @@
+{
+  "name": "pdfkit-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PDFKit - Your PDFs. Simplified.",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "npm --prefix backend run build",
+    "build:frontend": "npm --prefix frontend run build",
+    "start": "npm --prefix backend run start",
+    "test": "vitest run",
+    "qa": "vitest run"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "vitest": "^3.0.7"
+  },
+  "dependencies": {
+    "muhammara": "^6.0.6"
+  }
+}

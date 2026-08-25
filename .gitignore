@@ -1,0 +1,12 @@
+node_modules/
+dist/
+temp/
+tests/temp/
+.env
+.DS_Store
+coverage/
+frontend/node_modules/
+frontend/dist/
+backend/node_modules/
+backend/dist/
+backend/temp/
