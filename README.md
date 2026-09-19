@@ -78,7 +78,7 @@ pdfkit/
 ### 2. Installation
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/pdfkit.git
+git clone https://github.com/void-tech-shiv/PDFkit.git
 cd pdfkit
 
 # Install dependencies
