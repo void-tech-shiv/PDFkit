@@ -3,7 +3,7 @@ import { ToolLayout } from '../../components/ToolLayout.js';
 import { FileDropzone } from '../../components/FileDropzone.js';
 import { ResultCard } from '../../components/ResultCard.js';
 import { ProgressBar } from '../../components/ProgressBar.js';
-import { ApiClient } from '../../lib/api.js';
+import { convertImagesToPdfInBrowser } from '../../lib/image-to-pdf-browser.js';
 import { Image as ImageIcon, AlertCircle, ArrowLeft, ArrowRight, Trash2 } from 'lucide-react';
 
 interface ImageToPdfToolProps {
@@ -25,7 +25,7 @@ export const ImageToPdfTool: React.FC<ImageToPdfToolProps> = ({ onBack }) => {
     setErrorMsg(null);
 
     try {
-      const blob = await ApiClient.convertImagesToPdf(selectedFiles, {
+      const blob = await convertImagesToPdfInBrowser(selectedFiles, {
         pageSize,
         fitMode,
         margin,
@@ -70,7 +70,7 @@ export const ImageToPdfTool: React.FC<ImageToPdfToolProps> = ({ onBack }) => {
       ) : isProcessing ? (
         <ProgressBar
           statusText="Packaging Images to PDF..."
-          subText="Embedding color profiles and calculating coordinate layout"
+          subText="Processing locally in your browser — no server upload required"
         />
       ) : (
         <div className="max-w-4xl mx-auto space-y-6">
@@ -87,7 +87,6 @@ export const ImageToPdfTool: React.FC<ImageToPdfToolProps> = ({ onBack }) => {
 
           {selectedFiles.length > 0 && (
             <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-6">
-              {/* Image Ordering Strip */}
               <div className="space-y-2">
                 <h4 className="font-semibold text-xs text-slate-700 dark:text-slate-300">
                   Page Order ({selectedFiles.length} pages)
@@ -144,7 +143,6 @@ export const ImageToPdfTool: React.FC<ImageToPdfToolProps> = ({ onBack }) => {
                 </div>
               </div>
 
-              {/* Layout Config */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-slate-100 dark:border-slate-800 pt-4">
                 <div>
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
