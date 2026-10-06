@@ -4,8 +4,8 @@ import { FileDropzone } from '../../components/FileDropzone.js';
 import { PageThumbnailGrid } from '../../components/PageThumbnailGrid.js';
 import { ResultCard } from '../../components/ResultCard.js';
 import { ProgressBar } from '../../components/ProgressBar.js';
-import { ApiClient } from '../../lib/api.js';
-import { Scissors, AlertCircle, FileArchive, CheckSquare } from 'lucide-react';
+import { splitPdfInBrowser } from '../../lib/split-pdf-browser.js';
+import { Scissors, AlertCircle, FileArchive } from 'lucide-react';
 
 interface SplitPdfToolProps {
   onBack: () => void;
@@ -43,7 +43,7 @@ export const SplitPdfTool: React.FC<SplitPdfToolProps> = ({ onBack }) => {
     setErrorMsg(null);
 
     try {
-      const blob = await ApiClient.splitPdf(selectedFile, ranges, mode);
+      const blob = await splitPdfInBrowser(selectedFile, ranges, mode);
       setResultBlob(blob);
     } catch (err: any) {
       setErrorMsg(err.message || 'Failed to split PDF.');
@@ -71,14 +71,16 @@ export const SplitPdfTool: React.FC<SplitPdfToolProps> = ({ onBack }) => {
           onReset={() => {
             setSelectedFile(null);
             setSelectedPages([]);
+            setRangeInput('');
             setResultBlob(null);
+            setErrorMsg(null);
           }}
           extraInfo={mode === 'zip' ? 'Pages extracted to separate PDFs in ZIP.' : 'Selected pages combined into new PDF.'}
         />
       ) : isProcessing ? (
         <ProgressBar
           statusText="Extracting Selected Pages..."
-          subText="Separating content streams and re-encoding page dictionaries"
+          subText="Processing locally in your browser — no server upload required"
         />
       ) : !selectedFile ? (
         <div className="max-w-xl mx-auto">
@@ -94,7 +96,6 @@ export const SplitPdfTool: React.FC<SplitPdfToolProps> = ({ onBack }) => {
         </div>
       ) : (
         <div className="space-y-6 max-w-5xl mx-auto">
-          {/* Options & Action Bar */}
           <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
@@ -106,7 +107,6 @@ export const SplitPdfTool: React.FC<SplitPdfToolProps> = ({ onBack }) => {
                 </p>
               </div>
 
-              {/* Mode Toggle */}
               <div className="flex items-center gap-2 p-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-medium">
                 <button
                   type="button"
@@ -134,7 +134,6 @@ export const SplitPdfTool: React.FC<SplitPdfToolProps> = ({ onBack }) => {
               </div>
             </div>
 
-            {/* Range Input Field */}
             <div className="flex items-center gap-3">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 shrink-0">
                 Page Range:
@@ -164,7 +163,6 @@ export const SplitPdfTool: React.FC<SplitPdfToolProps> = ({ onBack }) => {
             </button>
           </div>
 
-          {/* Interactive Visual Thumbnail Grid */}
           <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl">
             <PageThumbnailGrid
               file={selectedFile}
