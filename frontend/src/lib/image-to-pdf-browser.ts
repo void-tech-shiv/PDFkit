@@ -1,4 +1,4 @@
-import { PDFDocument, PDFImage } from 'pdf-lib';
+import { PDFDocument, type PDFImage } from 'pdf-lib';
 
 export interface BrowserImageToPdfOptions {
   pageSize?: string;
@@ -17,12 +17,16 @@ async function rasterizeToPng(file: File): Promise<Uint8Array> {
   try {
     const image = new Image();
     image.decoding = 'async';
-    image.src = objectUrl;
 
     await new Promise<void>((resolve, reject) => {
       image.onload = () => resolve();
       image.onerror = () => reject(new Error(`Unable to read ${file.name}.`));
+      image.src = objectUrl;
     });
+
+    if (!image.naturalWidth || !image.naturalHeight) {
+      throw new Error(`Unable to read image dimensions for ${file.name}.`);
+    }
 
     const canvas = document.createElement('canvas');
     canvas.width = image.naturalWidth;
@@ -122,5 +126,6 @@ export async function convertImagesToPdfInBrowser(
   }
 
   const bytes = await pdf.save();
-  return new Blob([bytes], { type: 'application/pdf' });
+  const output = new Uint8Array(bytes);
+  return new Blob([output.buffer], { type: 'application/pdf' });
 }
