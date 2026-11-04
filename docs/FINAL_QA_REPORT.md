@@ -42,7 +42,7 @@
 | **Watermark PDF** | Text watermark, font size, opacity (50%), angle (30°), selective page targeting | Desktop | **PASS** |
 | **Signature PDF** | HTML5 Canvas drawing pad, coordinate placement sliders, PDF signature stamping | Desktop | **PASS** |
 | **Mobile Responsiveness** | Dropzone scaling, single-column tool grids, touch-friendly CTA buttons, no horizontal overflow | Mobile (390×844) | **PASS** |
-| **Ephemeral Storage & Privacy**| Automatic 15-minute garbage collection, instant post-response cleanup | Backend | **PASS** |
+| **Temporary File Handling** | Cleanup is called in password protect/unlock operations; stale-directory reaper runs every 5 minutes with a 15-minute default age. Not secure erasure or a guaranteed maximum retention time. | Backend source review | **DOCUMENTED — runtime verification pending** |
 
 ---
 
