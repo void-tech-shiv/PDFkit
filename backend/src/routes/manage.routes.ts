@@ -2,6 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { PdfManageService } from '../services/pdf-manage.service.js';
 import { parsePageRangeString, parsePageNumbersList } from '../utils/validator.js';
 import { PDFDocument } from 'pdf-lib';
+import { buildAttachmentDisposition } from '../utils/download.js';
 
 export const manageRoutes: FastifyPluginAsync = async (fastify) => {
   // Merge multiple PDFs
