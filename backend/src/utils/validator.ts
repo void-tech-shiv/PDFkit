@@ -89,3 +89,46 @@ export function parsePageNumbersList(pagesStr: string, totalPages: number): numb
     .filter(p => !isNaN(p) && p >= 1 && p <= totalPages)
     .map(p => p - 1);
 }
+
+/** Strict page-range parser: reject malformed or out-of-bounds input instead of silently clipping it. */
+export function parsePageRangeStringStrict(rangeStr: string, totalPages: number): number[] | null {
+  if (!Number.isInteger(totalPages) || totalPages < 1 || !rangeStr.trim()) return null;
+
+  const result = new Set<number>();
+  const parts = rangeStr.split(',');
+  if (parts.some((part) => !part.trim())) return null;
+
+  for (const rawPart of parts) {
+    const part = rawPart.trim();
+    const match = /^(\\d+)(?:\\s*-\\s*(\\d+))?$/.exec(part);
+    if (!match) return null;
+
+    const start = Number(match[1]);
+    const end = match[2] === undefined ? start : Number(match[2]);
+    if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) ||
+        start < 1 || end < 1 || start > totalPages || end > totalPages) return null;
+
+    const min = Math.min(start, end);
+    const max = Math.max(start, end);
+    for (let page = min; page <= max; page++) result.add(page - 1);
+  }
+
+  return [...result].sort((a, b) => a - b);
+}
+
+/** Strict comma-separated page list parser with no partial acceptance. */
+export function parsePageNumbersListStrict(pagesStr: string, totalPages: number): number[] | null {
+  if (!Number.isInteger(totalPages) || totalPages < 1 || !pagesStr.trim()) return null;
+  const tokens = pagesStr.split(',');
+  if (tokens.some((token) => !/^\\s*\\d+\\s*$/.test(token))) return null;
+
+  const pages = tokens.map((token) => Number(token.trim()));
+  if (pages.some((page) => !Number.isSafeInteger(page) || page < 1 || page > totalPages)) return null;
+  return [...new Set(pages)].map((page) => page - 1);
+}
+
+/** Only right-angle rotations are supported by the PDF page rotation model. */
+export function isValidRotationAngle(value: unknown): value is number {
+  return typeof value === 'number' && Number.isInteger(value) &&
+    [0, 90, 180, 270, -90, -180, -270].includes(value);
+}
