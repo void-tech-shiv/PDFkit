@@ -1,47 +1,51 @@
-# PDFKit - Backend Architecture
+# PDFkit Backend Architecture
 
 ## 1. Overview
-The PDFKit backend is built with **Node.js** and **Fastify** in TypeScript, providing a high-performance HTTP microservice for PDF processing, image downsampling, document conversion, and security.
 
----
+The backend uses Node.js, Fastify, and TypeScript for PDF processing, document conversion, image handling, and PDF security operations.
 
-## 2. Server Configuration
-- **Server Framework:** Fastify v4/v5
-- **Plugins & Middleware:**
-  - `@fastify/cors`: Strict origin validation with fallback for local dev.
-  - `@fastify/multipart`: Streaming multipart upload handler with file size limit enforcement (default: 100MB).
-  - `@fastify/static`: Serves frontend production build in single-container deployments.
-  - Custom Request Logger & Error Serializer.
+## 2. Server configuration
 
----
+- **HTTP framework:** Fastify.
+- **Multipart uploads:** `@fastify/multipart`; the configured default maximum file size is 100 MB through `MAX_FILE_SIZE_MB`.
+- **Static frontend:** `@fastify/static` serves the built frontend when the expected build directory is present.
+- **Logging:** Fastify logging is enabled outside test mode.
 
-## 3. Service Layer Architecture
+### CORS deployment warning
+
+The current `backend/src/server.ts` configures CORS with `origin: true`, which reflects the requesting origin. The `CORS_ORIGIN` value shown in `.env.example` is not currently read by the server implementation. Do not describe this as a strict origin allowlist, and do not expose a cross-origin production API on the assumption that `CORS_ORIGIN` restricts access. Before a public cross-origin deployment, implement and test an explicit origin allowlist in the server configuration.
+
+## 3. Service layout
 
 ```text
 backend/src/
 ├── routes/
-│   ├── compress.routes.ts     # Compression endpoints (/api/compress, /api/compress/analyze)
-│   ├── convert.routes.ts      # Word/Image/Text converters (/api/convert/*)
-│   ├── manage.routes.ts       # Merge, Split, Rotate, Delete, Reorder (/api/pdf/*)
-│   ├── security.routes.ts     # Protect, Unlock, Watermark, Sign (/api/security/*)
-│   └── health.routes.ts       # Service health & version
+│   ├── compress.routes.ts
+│   ├── convert.routes.ts
+│   ├── manage.routes.ts
+│   ├── security.routes.ts
+│   └── health.routes.ts
 ├── services/
-│   ├── compression.service.ts # Core PDF compression & target-size optimizer
-│   ├── docx.service.ts        # Mammoth DOCX to PDF converter
-│   ├── text.service.ts        # Dynamic text/typography to PDF renderer
-│   ├── image.service.ts       # Sharp rasterizer & PDF packager
-│   ├── pdf-manage.service.ts  # pdf-lib page manipulation
-│   └── security.service.ts    # Encryption & digital signature stamping
+│   ├── compression.service.ts
+│   ├── docx.service.ts
+│   ├── text.service.ts
+│   ├── image.service.ts
+│   ├── pdf-manage.service.ts
+│   └── security.service.ts
 ├── utils/
-│   ├── temp-manager.ts        # Ephemeral file manager with 15min TTL reaper
-│   └── validator.ts           # Zod schemas for file & parameter validation
-└── server.ts                  # Server initialization & lifecycle
+│   ├── temp-manager.ts
+│   └── validator.ts
+└── server.ts
 ```
 
----
+## 4. File processing and temporary storage
 
-## 4. Ephemeral Storage & Security
-- Every request generates a temporary execution sandbox: `./temp/<uuid>/`.
-- The response hooks cleanup handlers to unlink all temp artifacts on stream closure.
-- A periodic scavenger task runs every 15 minutes to delete any stale directories older than 15 minutes.
-- No database or persistent storage volume is attached.
+- The current upload routes generally read uploaded files into Node.js buffers before processing.
+- The password-protection and password-unlock operations create a per-operation directory under `TEMP_DIR` (default: `./temp`) and write intermediate PDF files there.
+- Those operations call `TempManager.cleanSandbox()` in a `finally` block.
+- If cleanup does not run (for example, after an abrupt process termination), the background collector is intended to remove stale sandbox directories.
+- `TEMP_FILE_TTL_MINUTES` defaults to 15 minutes. The collector is scheduled every 5 minutes and removes directories whose modification age exceeds the configured TTL. This is a cleanup target, not a guaranteed maximum retention time.
+- Docker Compose mounts a named volume at `/app/temp`. That volume can persist across container restarts until files are removed; it is not accurate to describe the deployment as having no persistent storage volume.
+- The repository does not implement database-backed document history or user accounts.
+
+For deployment and privacy limitations, see [PRIVACY.md](./PRIVACY.md) and [DEPLOYMENT.md](./DEPLOYMENT.md).
