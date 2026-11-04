@@ -42,9 +42,11 @@
 
 ---
 
-## 4. Privacy & Data Handling Guarantee
-- **Zero Permanent Storage:** Uploaded files and generated artifacts reside in isolated temporary storage and are removed immediately after completion and scrubbed via a background 15-minute garbage collector.
-- **No Analytics / No Tracking of Document Content:** Metadata is parsed strictly in-memory during processing.
+## 4. Privacy & File Handling
+- The application does not implement user accounts or database-backed document history.
+- Most upload routes currently process files in Node.js memory buffers; password-protection and password-unlock operations use temporary server-side files with cleanup and a stale-file collector.
+- Temporary cleanup is best-effort, not secure erasure or a guaranteed maximum retention period. Host volumes, backups, logs, and infrastructure providers may have separate retention behavior.
+- See [the privacy and file-handling notes](./PRIVACY.md) for implementation details and deployment responsibilities.
 
 ---
 
