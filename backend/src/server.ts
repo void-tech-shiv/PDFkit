@@ -28,6 +28,10 @@ export function getAllowedOrigins(): string[] {
   }
 
   return [...new Set(configured.map((value) => {
+    if (value === '*') {
+      throw new Error('CORS_ORIGIN entries must be exact http(s) origins without paths or credentials: *');
+    }
+
     let parsed: URL;
     try {
       parsed = new URL(value);
