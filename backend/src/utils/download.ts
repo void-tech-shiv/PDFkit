@@ -1,7 +1,7 @@
 /**
  * Build a safe Content-Disposition value for a downloaded file.
- * Treat uploaded filenames as untrusted input: remove path components,
- * control characters and header delimiters before reflecting a name.
+ * Uploaded filenames are untrusted: remove path components, control
+ * characters and header delimiters before reflecting a name.
  */
 export function buildAttachmentDisposition(input: string, fallback = 'download'): string {
   const leaf = String(input || '').split(/[\\/]/).pop() ?? '';
