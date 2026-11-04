@@ -125,6 +125,9 @@ Original PDFkit code and documentation are licensed under the [MIT License](./LI
 
 ## 🤝 Community & Security
 
+- [Share user feedback](https://github.com/void-tech-shiv/PDFkit/issues/new?template=user_feedback.yml)
+- [Community adoption and feedback plan](./docs/COMMUNITY_ADOPTION.md)
+- [Changelog](./CHANGELOG.md)
 - [Contributing guide](./CONTRIBUTING.md)
 - [Code of Conduct](./CODE_OF_CONDUCT.md)
 - [Security policy](./SECURITY.md)
