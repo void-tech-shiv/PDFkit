@@ -54,7 +54,7 @@ The previous `npm run start:backend` command is not defined in the root `package
 - Restrict the temporary directory to the service account and ensure it is not publicly served.
 - Set upload limits appropriate to available memory and CPU.
 - Review host logs, backups, volumes, and retention policies.
-- **CORS warning:** the current backend uses `origin: true`; `CORS_ORIGIN` in `.env.example` is not currently enforced by the server. Do not rely on that variable as an allowlist. Implement and verify explicit CORS origin validation before exposing a cross-origin API publicly.
+- **CORS:** set `CORS_ORIGIN` to comma-separated exact frontend origins, such as `https://pdfkit.example.com`. Wildcards, URL paths, and credentials are rejected at startup. CORS is not authentication; protect sensitive endpoints separately if needed.
 - Review [PRIVACY.md](./PRIVACY.md) before publishing a privacy statement for a hosted instance.
 
 ## 5. Environment reference
