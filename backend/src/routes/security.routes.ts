@@ -2,6 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { SecurityService } from '../services/security.service.js';
 import { WatermarkSchema } from '../utils/validator.js';
 import { buildAttachmentDisposition } from '../utils/download.js';
+import { isPdfBuffer } from '../utils/file-validation.js';
 
 export const securityRoutes: FastifyPluginAsync = async (fastify) => {
   // Protect PDF
@@ -24,6 +25,10 @@ export const securityRoutes: FastifyPluginAsync = async (fastify) => {
 
     if (!pdfBuffer || pdfBuffer.length === 0) {
       return reply.status(400).send({ error: 'No PDF file uploaded.' });
+    }
+
+    if (!isPdfBuffer(pdfBuffer)) {
+      return reply.status(400).send({ error: 'The uploaded file is not a valid PDF.' });
     }
 
     if (!password || password.trim().length === 0) {
@@ -69,6 +74,10 @@ export const securityRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.status(400).send({ error: 'No encrypted PDF file uploaded.' });
     }
 
+    if (!isPdfBuffer(pdfBuffer)) {
+      return reply.status(400).send({ error: 'The uploaded file is not a valid PDF.' });
+    }
+
     try {
       const unlockedPdf = await SecurityService.unlockPdf(pdfBuffer, password);
       const baseName = fileName.replace(/\.pdf$/i, '');
@@ -99,6 +108,10 @@ export const securityRoutes: FastifyPluginAsync = async (fastify) => {
 
     if (!pdfBuffer || pdfBuffer.length === 0) {
       return reply.status(400).send({ error: 'No PDF file uploaded.' });
+    }
+
+    if (!isPdfBuffer(pdfBuffer)) {
+      return reply.status(400).send({ error: 'The uploaded file is not a valid PDF.' });
     }
 
     const validated = WatermarkSchema.safeParse(fields);
@@ -148,6 +161,14 @@ export const securityRoutes: FastifyPluginAsync = async (fastify) => {
 
     if (!pdfBuffer || !signatureBuffer) {
       return reply.status(400).send({ error: 'Both PDF file and signature image are required.' });
+    }
+
+    if (!isPdfBuffer(pdfBuffer)) {
+      return reply.status(400).send({ error: 'The uploaded file is not a valid PDF.' });
+    }
+
+    if (!getSupportedImageType(signatureBuffer)) {
+      return reply.status(400).send({ error: 'The signature must be a valid JPEG, PNG, or WebP image.' });
     }
 
     let placements = [
