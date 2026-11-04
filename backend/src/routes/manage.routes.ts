@@ -3,6 +3,7 @@ import { PdfManageService } from '../services/pdf-manage.service.js';
 import { parsePageRangeString, parsePageNumbersList } from '../utils/validator.js';
 import { PDFDocument } from 'pdf-lib';
 import { buildAttachmentDisposition } from '../utils/download.js';
+import { isPdfBuffer } from '../utils/file-validation.js';
 
 export const manageRoutes: FastifyPluginAsync = async (fastify) => {
   // Merge multiple PDFs
@@ -57,6 +58,10 @@ export const manageRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.status(400).send({ error: 'No PDF file uploaded.' });
     }
 
+    if (!isPdfBuffer(pdfBuffer)) {
+      return reply.status(400).send({ error: 'The uploaded file is not a valid PDF.' });
+    }
+
     try {
       const srcDoc = await PDFDocument.load(pdfBuffer, { ignoreEncryption: true });
       const totalPages = srcDoc.getPageCount();
@@ -108,6 +113,10 @@ export const manageRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.status(400).send({ error: 'No PDF file uploaded.' });
     }
 
+    if (!isPdfBuffer(pdfBuffer)) {
+      return reply.status(400).send({ error: 'The uploaded file is not a valid PDF.' });
+    }
+
     try {
       let rotations: Record<number, number> = {};
       if (fields.rotations) {
@@ -155,6 +164,10 @@ export const manageRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.status(400).send({ error: 'No PDF file uploaded.' });
     }
 
+    if (!isPdfBuffer(pdfBuffer)) {
+      return reply.status(400).send({ error: 'The uploaded file is not a valid PDF.' });
+    }
+
     try {
       const doc = await PDFDocument.load(pdfBuffer, { ignoreEncryption: true });
       const totalPages = doc.getPageCount();
@@ -194,6 +207,10 @@ export const manageRoutes: FastifyPluginAsync = async (fastify) => {
 
     if (!pdfBuffer || pdfBuffer.length === 0) {
       return reply.status(400).send({ error: 'No PDF file uploaded.' });
+    }
+
+    if (!isPdfBuffer(pdfBuffer)) {
+      return reply.status(400).send({ error: 'The uploaded file is not a valid PDF.' });
     }
 
     try {
