@@ -1,0 +1,49 @@
+name: Bug report
+description: Report a reproducible problem in PDFkit.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: "Please search existing issues first. Do not include private documents, passwords, tokens, or personal information. For security vulnerabilities, follow SECURITY.md instead."
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: A clear description of the problem.
+      placeholder: Describe the issue.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Use synthetic or redacted files only.
+      placeholder: "1. Open ...\n2. Upload a sample file ...\n3. Select ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, operating system, deployment URL (if public), and PDFkit commit/version.
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or screenshots
+      description: Remove secrets and personal/document data before sharing.
+    validations:
+      required: false
