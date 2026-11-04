@@ -2,7 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { SecurityService } from '../services/security.service.js';
 import { WatermarkSchema } from '../utils/validator.js';
 import { buildAttachmentDisposition } from '../utils/download.js';
-import { isPdfBuffer } from '../utils/file-validation.js';
+import { isPdfBuffer, getSupportedImageType } from '../utils/file-validation.js';
 
 export const securityRoutes: FastifyPluginAsync = async (fastify) => {
   // Protect PDF
