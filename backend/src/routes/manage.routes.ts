@@ -29,7 +29,7 @@ export const manageRoutes: FastifyPluginAsync = async (fastify) => {
       const merged = await PdfManageService.mergePdfs(pdfBuffers);
       reply
         .header('Content-Type', 'application/pdf')
-        .header('Content-Disposition', `attachment; filename="${firstFileName}-merged.pdf"`)
+        .header('Content-Disposition', buildAttachmentDisposition(`${firstFileName}-merged.pdf`))
         .send(merged);
     } catch (err: any) {
       fastify.log.error(err);
@@ -74,12 +74,12 @@ export const manageRoutes: FastifyPluginAsync = async (fastify) => {
       if (mode === 'zip') {
         reply
           .header('Content-Type', 'application/zip')
-          .header('Content-Disposition', `attachment; filename="${baseName}-pages.zip"`)
+          .header('Content-Disposition', buildAttachmentDisposition(`${baseName}-pages.zip`))
           .send(result);
       } else {
         reply
           .header('Content-Type', 'application/pdf')
-          .header('Content-Disposition', `attachment; filename="${baseName}-split.pdf"`)
+          .header('Content-Disposition', buildAttachmentDisposition(`${baseName}-split.pdf`))
           .send(result);
       }
     } catch (err: any) {
@@ -127,7 +127,7 @@ export const manageRoutes: FastifyPluginAsync = async (fastify) => {
       const baseName = fileName.replace(/\.pdf$/i, '');
       reply
         .header('Content-Type', 'application/pdf')
-        .header('Content-Disposition', `attachment; filename="${baseName}-rotated.pdf"`)
+        .header('Content-Disposition', buildAttachmentDisposition(`${baseName}-rotated.pdf`))
         .send(rotated);
     } catch (err: any) {
       fastify.log.error(err);
@@ -168,7 +168,7 @@ export const manageRoutes: FastifyPluginAsync = async (fastify) => {
       const baseName = fileName.replace(/\.pdf$/i, '');
       reply
         .header('Content-Type', 'application/pdf')
-        .header('Content-Disposition', `attachment; filename="${baseName}-pages-deleted.pdf"`)
+        .header('Content-Disposition', buildAttachmentDisposition(`${baseName}-pages-deleted.pdf`))
         .send(result);
     } catch (err: any) {
       fastify.log.error(err);
@@ -216,7 +216,7 @@ export const manageRoutes: FastifyPluginAsync = async (fastify) => {
       const baseName = fileName.replace(/\.pdf$/i, '');
       reply
         .header('Content-Type', 'application/pdf')
-        .header('Content-Disposition', `attachment; filename="${baseName}-reordered.pdf"`)
+        .header('Content-Disposition', buildAttachmentDisposition(`${baseName}-reordered.pdf`))
         .send(result);
     } catch (err: any) {
       fastify.log.error(err);
