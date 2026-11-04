@@ -1,21 +1,29 @@
-version: '3.8'
-
 services:
   pdfkit:
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile
     container_name: pdfkit-app
     restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
-      - PORT=3000
-      - MAX_FILE_SIZE_MB=100
-      - TEMP_FILE_TTL_MINUTES=15
+      NODE_ENV: production
+      PORT: 3000
+      HOST: 0.0.0.0
+      MAX_FILE_SIZE_MB: 100
+      TEMP_FILE_TTL_MINUTES: 15
+      TEMP_DIR: /app/temp
     volumes:
       - pdfkit-temp:/app/temp
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    init: true
 
 volumes:
   pdfkit-temp:
