@@ -30,7 +30,7 @@
   - **Unlock PDF:** Decrypt protected documents with password verification.
   - **Watermark PDF:** Custom rotated semi-transparent text watermarks.
   - **Signature PDF:** Interactive HTML5 drawing pad or signature upload with page placement.
-- 🛡️ **Privacy Guarantee:** Zero permanent storage. Automatic 15-minute garbage collection and instant post-response cleanup.
+- 🛡️ **Ephemeral Processing:** Uploads are processed in memory where implemented; password protect/unlock operations use temporary server-side files with cleanup and stale-file collection. See [Privacy & File Handling](./docs/PRIVACY.md) for implementation details and deployment limitations.
 
 ---
 
@@ -121,3 +121,13 @@ The application will be accessible at [http://localhost:3000](http://localhost:3
 ## 📄 License
 
 Original PDFkit code and documentation are licensed under the [MIT License](./LICENSE). Third-party dependencies and assets remain subject to their respective licences; see [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md) and the upstream notices. Copyright information is available in [COPYRIGHT](./COPYRIGHT).
+
+
+## 🤝 Community & Security
+
+- [Contributing guide](./CONTRIBUTING.md)
+- [Code of Conduct](./CODE_OF_CONDUCT.md)
+- [Security policy](./SECURITY.md)
+- [Getting help](./SUPPORT.md)
+- [Privacy & file handling](./docs/PRIVACY.md)
+- [Third-party notices](./THIRD_PARTY_NOTICES.md)
