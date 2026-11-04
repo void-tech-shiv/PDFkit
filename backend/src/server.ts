@@ -128,7 +128,7 @@ export async function buildServer() {
     });
   }
 
-  // Avoid returning internal exception details to API clients.
+  // Avoid returning internal exception details from unhandled errors to API clients.
   fastify.setErrorHandler((error: any, request, reply) => {
     fastify.log.error(error);
     const statusCode = Number.isInteger(error.statusCode) && error.statusCode >= 400 && error.statusCode < 600
