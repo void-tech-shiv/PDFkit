@@ -13,7 +13,7 @@ The backend uses Node.js, Fastify, and TypeScript for PDF processing, document c
 
 ### CORS deployment warning
 
-The current `backend/src/server.ts` configures CORS with `origin: true`, which reflects the requesting origin. The `CORS_ORIGIN` value shown in `.env.example` is not currently read by the server implementation. Do not describe this as a strict origin allowlist, and do not expose a cross-origin production API on the assumption that `CORS_ORIGIN` restricts access. Before a public cross-origin deployment, implement and test an explicit origin allowlist in the server configuration.
+The server reads `CORS_ORIGIN` as a comma-separated list of exact HTTP(S) origins. It rejects malformed entries, paths, credentials, and wildcard values at startup. The default is `http://localhost:5173`; set the exact production frontend origin(s) in the deployment environment. Requests without an Origin header (for example, server-to-server calls) are not controlled by browser CORS. CORS is a browser access policy, not authentication or API authorization.
 
 ## 3. Service layout
 
