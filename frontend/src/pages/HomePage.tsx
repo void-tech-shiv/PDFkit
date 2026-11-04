@@ -291,9 +291,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-bold text-sm text-white">Zero Permanent Storage</h4>
+                <h4 className="font-bold text-sm text-white">Temporary File Cleanup</h4>
                 <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                  Files are processed ephemerally and automatically scrubbed immediately after download.
+                  Temporary processing files are cleaned up where used. Retention can also depend on the hosting environment.
                 </p>
               </div>
             </div>
