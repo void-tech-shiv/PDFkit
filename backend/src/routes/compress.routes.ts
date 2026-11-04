@@ -1,6 +1,7 @@
 import { FastifyPluginAsync } from 'fastify';
 import { PdfCompressionEngine } from '../compression/compressor.js';
 import { CompressRequestSchema } from '../utils/validator.js';
+import { buildAttachmentDisposition } from '../utils/download.js';
 
 export const compressRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post('/api/compress', async (request, reply) => {
