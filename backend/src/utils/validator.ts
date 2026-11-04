@@ -100,7 +100,7 @@ export function parsePageRangeStringStrict(rangeStr: string, totalPages: number)
 
   for (const rawPart of parts) {
     const part = rawPart.trim();
-    const match = /^(\\d+)(?:\\s*-\\s*(\\d+))?$/.exec(part);
+    const match = /^(\d+)(?:\s*-\s*(\d+))?$/.exec(part);
     if (!match) return null;
 
     const start = Number(match[1]);
@@ -120,7 +120,7 @@ export function parsePageRangeStringStrict(rangeStr: string, totalPages: number)
 export function parsePageNumbersListStrict(pagesStr: string, totalPages: number): number[] | null {
   if (!Number.isInteger(totalPages) || totalPages < 1 || !pagesStr.trim()) return null;
   const tokens = pagesStr.split(',');
-  if (tokens.some((token) => !/^\\s*\\d+\\s*$/.test(token))) return null;
+  if (tokens.some((token) => !/^\s*\d+\s*$/.test(token))) return null;
 
   const pages = tokens.map((token) => Number(token.trim()));
   if (pages.some((page) => !Number.isSafeInteger(page) || page < 1 || page > totalPages)) return null;
