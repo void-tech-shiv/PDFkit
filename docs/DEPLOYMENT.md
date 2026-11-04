@@ -20,13 +20,13 @@ docker build -t pdfkit:latest -f docker/Dockerfile .
 docker run --rm -p 3000:3000 --name pdfkit pdfkit:latest
 ```
 
-The container listens on port 3000. The one-off `docker run` example above does not mount a named volume. For Docker Compose:
+The container listens on port 3000. The one-off `docker run` example above runs the image as its unprivileged `node` user. For persistent temporary storage and the recommended runtime restrictions, use Docker Compose:
 
 ```bash
 docker compose -f docker/docker-compose.yml up --build -d
 ```
 
-The Compose configuration mounts the named `pdfkit-temp` volume at `/app/temp`. Treat it as persistent storage: files may remain across container restarts until cleanup removes them. Back up or remove this volume only according to your deployment's retention requirements.
+The production image runs as the unprivileged `node` user, exposes a health check at `/api/health`, and writes request sandboxes under `/app/temp`. Compose mounts the named `pdfkit-temp` volume there, makes the container root filesystem read-only, drops Linux capabilities, enables `no-new-privileges`, and provides a bounded writable `/tmp` tmpfs. The named volume remains persistent across restarts; cleanup is best-effort and is not secure erasure or a guaranteed maximum-retention period.
 
 ## 3. Separate frontend and backend deployments
 
