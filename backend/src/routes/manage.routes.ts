@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import { PdfManageService } from '../services/pdf-manage.service.js';
-import { parsePageRangeString, parsePageNumbersList } from '../utils/validator.js';
+import { parsePageRangeStringStrict, parsePageNumbersListStrict, isValidRotationAngle } from '../utils/validator.js';
 import { PDFDocument } from 'pdf-lib';
 import { buildAttachmentDisposition } from '../utils/download.js';
 import { isPdfBuffer } from '../utils/file-validation.js';
@@ -72,8 +72,8 @@ export const manageRoutes: FastifyPluginAsync = async (fastify) => {
       const ranges = fields.ranges || `1-${totalPages}`;
       const mode = fields.mode === 'zip' ? 'zip' : 'single';
 
-      const pageIndices = parsePageRangeString(ranges, totalPages);
-      if (pageIndices.length === 0) {
+      const pageIndices = parsePageRangeStringStrict(String(ranges), totalPages);
+      if (!pageIndices || pageIndices.length === 0) {
         return reply.status(400).send({ error: 'Selected page range is invalid or empty.' });
       }
 
@@ -122,18 +122,43 @@ export const manageRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
+      const doc = await PDFDocument.load(pdfBuffer, { ignoreEncryption: true });
+      const totalPages = doc.getPageCount();
       let rotations: Record<number, number> = {};
-      if (fields.rotations) {
-        try {
-          rotations = typeof fields.rotations === 'string' ? JSON.parse(fields.rotations) : fields.rotations;
-        } catch {
-          // If scalar angle passed e.g. angle=90 for all pages
-          const angle = parseInt(fields.rotations || fields.angle || '90', 10);
-          const doc = await PDFDocument.load(pdfBuffer, { ignoreEncryption: true });
-          for (let i = 0; i < doc.getPageCount(); i++) {
-            rotations[i] = angle;
+
+      if (fields.rotations !== undefined && fields.rotations !== '') {
+        let parsed: unknown = fields.rotations;
+        if (typeof fields.rotations === 'string') {
+          try {
+            parsed = JSON.parse(fields.rotations);
+          } catch {
+            parsed = Number(fields.rotations);
           }
         }
+
+        if (typeof parsed === 'number') {
+          if (!isValidRotationAngle(parsed)) {
+            return reply.status(400).send({ error: 'Rotation must be 0, 90, 180, or 270 degrees.' });
+          }
+          for (let i = 0; i < totalPages; i++) rotations[i] = parsed;
+        } else if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          for (const [pageKey, angle] of Object.entries(parsed as Record<string, unknown>)) {
+            const pageIndex = Number(pageKey);
+            if (!/^\\d+$/.test(pageKey) || !Number.isInteger(pageIndex) ||
+                pageIndex < 0 || pageIndex >= totalPages || !isValidRotationAngle(angle)) {
+              return reply.status(400).send({ error: 'Rotation map contains an invalid page index or angle.' });
+            }
+            rotations[pageIndex] = angle;
+          }
+        } else {
+          return reply.status(400).send({ error: 'Invalid rotation parameters.' });
+        }
+      } else if (fields.angle !== undefined) {
+        const angle = Number(fields.angle);
+        if (!isValidRotationAngle(angle)) {
+          return reply.status(400).send({ error: 'Rotation must be 0, 90, 180, or 270 degrees.' });
+        }
+        for (let i = 0; i < totalPages; i++) rotations[i] = angle;
       }
 
       const rotated = await PdfManageService.rotatePdf(pdfBuffer, rotations);
@@ -175,9 +200,9 @@ export const manageRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const doc = await PDFDocument.load(pdfBuffer, { ignoreEncryption: true });
       const totalPages = doc.getPageCount();
-      const pagesToDelete = fields.pages ? parsePageNumbersList(fields.pages, totalPages) : [];
+      const pagesToDelete = fields.pages ? parsePageNumbersListStrict(String(fields.pages), totalPages) : null;
 
-      if (pagesToDelete.length === 0) {
+      if (!pagesToDelete || pagesToDelete.length === 0) {
         return reply.status(400).send({ error: 'No pages specified for deletion.' });
       }
 
