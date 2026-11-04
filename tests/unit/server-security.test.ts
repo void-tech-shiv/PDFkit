@@ -51,4 +51,26 @@ describe('server security configuration', () => {
     vi.stubEnv('MAX_FILE_SIZE_MB', '0');
     await expect(buildServer()).rejects.toThrow(/MAX_FILE_SIZE_MB/);
   });
+  it('does not return unhandled internal exception details to clients', async () => {
+    vi.stubEnv('CORS_ORIGIN', 'https://frontend.example.com');
+    const server = await buildServer();
+
+    try {
+      server.get('/__test/internal-error', async () => {
+        throw new Error('private filesystem path /srv/private/document.pdf');
+      });
+
+      const response = await server.inject({
+        method: 'GET',
+        url: '/__test/internal-error',
+      });
+
+      expect(response.statusCode).toBe(500);
+      expect(response.body).not.toContain('/srv/private/document.pdf');
+      expect(response.json().error).toBe('An unexpected internal error occurred.');
+    } finally {
+      await server.close();
+    }
+  });
+
 });
