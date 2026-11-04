@@ -119,4 +119,5 @@ The application will be accessible at [http://localhost:3000](http://localhost:3
 ---
 
 ## 📄 License
-MIT License. Free for personal and commercial use.
+
+Original PDFkit code and documentation are licensed under the [MIT License](./LICENSE). Third-party dependencies and assets remain subject to their respective licences; see [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md) and the upstream notices. Copyright information is available in [COPYRIGHT](./COPYRIGHT).
