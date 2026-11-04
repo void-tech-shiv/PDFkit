@@ -39,7 +39,7 @@ export const securityRoutes: FastifyPluginAsync = async (fastify) => {
       const baseName = fileName.replace(/\.pdf$/i, '');
       reply
         .header('Content-Type', 'application/pdf')
-        .header('Content-Disposition', `attachment; filename="${baseName}-protected.pdf"`)
+        .header('Content-Disposition', buildAttachmentDisposition(`${baseName}-protected.pdf`))
         .send(protectedPdf);
     } catch (err: any) {
       fastify.log.error(err);
@@ -74,7 +74,7 @@ export const securityRoutes: FastifyPluginAsync = async (fastify) => {
       const baseName = fileName.replace(/\.pdf$/i, '');
       reply
         .header('Content-Type', 'application/pdf')
-        .header('Content-Disposition', `attachment; filename="${baseName}-unlocked.pdf"`)
+        .header('Content-Disposition', buildAttachmentDisposition(`${baseName}-unlocked.pdf`))
         .send(unlockedPdf);
     } catch (err: any) {
       return reply.status(401).send({ error: 'The password is incorrect or the document could not be decrypted.' });
@@ -111,7 +111,7 @@ export const securityRoutes: FastifyPluginAsync = async (fastify) => {
       const baseName = fileName.replace(/\.pdf$/i, '');
       reply
         .header('Content-Type', 'application/pdf')
-        .header('Content-Disposition', `attachment; filename="${baseName}-watermarked.pdf"`)
+        .header('Content-Disposition', buildAttachmentDisposition(`${baseName}-watermarked.pdf`))
         .send(watermarked);
     } catch (err: any) {
       fastify.log.error(err);
@@ -173,7 +173,7 @@ export const securityRoutes: FastifyPluginAsync = async (fastify) => {
       const baseName = fileName.replace(/\.pdf$/i, '');
       reply
         .header('Content-Type', 'application/pdf')
-        .header('Content-Disposition', `attachment; filename="${baseName}-signed.pdf"`)
+        .header('Content-Disposition', buildAttachmentDisposition(`${baseName}-signed.pdf`))
         .send(signedPdf);
     } catch (err: any) {
       fastify.log.error(err);
