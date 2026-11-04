@@ -5,6 +5,7 @@ import { ImageConverter } from '../converters/image-converter.js';
 import { PdfManageService } from '../services/pdf-manage.service.js';
 import { ImagesToPdfSchema } from '../utils/validator.js';
 import { buildAttachmentDisposition } from '../utils/download.js';
+import { isPdfBuffer, isDocxPackageBuffer, getSupportedImageType } from '../utils/file-validation.js';
 
 export const convertRoutes: FastifyPluginAsync = async (fastify) => {
   // Word to PDF
@@ -24,11 +25,15 @@ export const convertRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.status(400).send({ error: 'No valid DOCX file uploaded.' });
     }
 
+    if (!isDocxPackageBuffer(docxBuffer)) {
+      return reply.status(400).send({ error: 'The uploaded file is not a valid DOCX package.' });
+    }
+
     try {
       const pdfBuffer = await DocxConverter.convertToPdf(docxBuffer);
       reply
         .header('Content-Type', 'application/pdf')
-        .header('Content-Disposition', buildAttachmentDisposition(`fileName`))
+        .header('Content-Disposition', buildAttachmentDisposition(fileName))
         .send(pdfBuffer);
     } catch (err: any) {
       fastify.log.error(err);
@@ -73,7 +78,7 @@ export const convertRoutes: FastifyPluginAsync = async (fastify) => {
 
       reply
         .header('Content-Type', 'application/pdf')
-        .header('Content-Disposition', 'attachment; filename="document.pdf"')
+        .header('Content-Disposition', buildAttachmentDisposition('document.pdf'))
         .send(pdfBuffer);
     } catch (err: any) {
       fastify.log.error(err);
@@ -90,7 +95,11 @@ export const convertRoutes: FastifyPluginAsync = async (fastify) => {
     for await (const part of parts) {
       if (part.type === 'file') {
         const buf = await part.toBuffer();
-        imageList.push({ buffer: buf, mimeType: part.mimetype });
+        const detectedType = getSupportedImageType(buf);
+        if (!detectedType) {
+          return reply.status(400).send({ error: 'Only valid JPEG, PNG, and WebP images are supported.' });
+        }
+        imageList.push({ buffer: buf, mimeType: detectedType });
       } else {
         fields[part.fieldname] = part.value;
       }
@@ -109,7 +118,7 @@ export const convertRoutes: FastifyPluginAsync = async (fastify) => {
       const pdfBuffer = await ImageConverter.imagesToPdf(imageList, options);
       reply
         .header('Content-Type', 'application/pdf')
-        .header('Content-Disposition', 'attachment; filename="images-combined.pdf"')
+        .header('Content-Disposition', buildAttachmentDisposition('images-combined.pdf'))
         .send(pdfBuffer);
     } catch (err: any) {
       fastify.log.error(err);
@@ -130,6 +139,10 @@ export const convertRoutes: FastifyPluginAsync = async (fastify) => {
 
     if (!pdfBuffer || pdfBuffer.length === 0) {
       return reply.status(400).send({ error: 'No valid PDF file uploaded.' });
+    }
+
+    if (!isPdfBuffer(pdfBuffer)) {
+      return reply.status(400).send({ error: 'The uploaded file is not a valid PDF.' });
     }
 
     try {
