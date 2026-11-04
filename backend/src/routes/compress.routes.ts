@@ -59,7 +59,7 @@ export const compressRoutes: FastifyPluginAsync = async (fastify) => {
         .send(result.buffer);
     } catch (err: any) {
       fastify.log.error(err);
-      return reply.status(500).send({ error: 'Failed to compress PDF. ' + err.message });
+      return reply.status(500).send({ error: 'Failed to compress PDF. Please try again.' });
     }
   });
 };
