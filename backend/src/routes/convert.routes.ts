@@ -4,6 +4,7 @@ import { TextConverter } from '../converters/text-converter.js';
 import { ImageConverter } from '../converters/image-converter.js';
 import { PdfManageService } from '../services/pdf-manage.service.js';
 import { ImagesToPdfSchema } from '../utils/validator.js';
+import { buildAttachmentDisposition } from '../utils/download.js';
 
 export const convertRoutes: FastifyPluginAsync = async (fastify) => {
   // Word to PDF
@@ -27,7 +28,7 @@ export const convertRoutes: FastifyPluginAsync = async (fastify) => {
       const pdfBuffer = await DocxConverter.convertToPdf(docxBuffer);
       reply
         .header('Content-Type', 'application/pdf')
-        .header('Content-Disposition', `attachment; filename="${fileName}"`)
+        .header('Content-Disposition', buildAttachmentDisposition(`fileName`))
         .send(pdfBuffer);
     } catch (err: any) {
       fastify.log.error(err);
