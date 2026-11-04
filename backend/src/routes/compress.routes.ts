@@ -52,7 +52,7 @@ export const compressRoutes: FastifyPluginAsync = async (fastify) => {
       const baseName = fileName.replace(/\.pdf$/i, '');
       reply
         .header('Content-Type', 'application/pdf')
-        .header('Content-Disposition', `attachment; filename="${baseName}-compressed.pdf"`)
+        .header('Content-Disposition', buildAttachmentDisposition(`${baseName}-compressed.pdf`))
         .header('X-Original-Size', result.originalSizeBytes.toString())
         .header('X-Compressed-Size', result.compressedSizeBytes.toString())
         .header('X-Reduction-Percent', result.reductionPercent.toString())
