@@ -110,9 +110,10 @@ export const convertRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     const validated = ImagesToPdfSchema.safeParse(fields);
-    const options = validated.success
-      ? validated.data
-      : { pageSize: 'a4' as const, fitMode: 'contain' as const, margin: 20 };
+    if (!validated.success) {
+      return reply.status(400).send({ error: 'Invalid image-to-PDF parameters.' });
+    }
+    const options = validated.data;
 
     try {
       const pdfBuffer = await ImageConverter.imagesToPdf(imageList, options);
