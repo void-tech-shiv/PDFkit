@@ -1,0 +1,37 @@
+name: User feedback
+description: Share feedback about the PDFkit experience.
+title: "[Feedback]: "
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for trying PDFkit. Use sample or non-sensitive documents only. Never include private PDFs, passwords, tokens, or personal information."
+  - type: dropdown
+    id: area
+    attributes:
+      label: What are you giving feedback about?
+      options:
+        - Overall experience
+        - PDF compression
+        - Document conversion
+        - PDF management
+        - Security and annotation
+        - Mobile usability
+        - Accessibility
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: experience
+    attributes:
+      label: What worked well or could be improved?
+      description: Describe your experience and the change you would find useful.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Optional context
+      description: Browser, device category, and steps to reproduce. Do not include personal or document data.
+    validations:
+      required: false
