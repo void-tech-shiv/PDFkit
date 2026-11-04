@@ -22,6 +22,10 @@ export const manageRoutes: FastifyPluginAsync = async (fastify) => {
       }
     }
 
+    if (pdfBuffers.some((buffer) => !isPdfBuffer(buffer))) {
+      return reply.status(400).send({ error: 'Every uploaded file must be a valid PDF.' });
+    }
+
     if (pdfBuffers.length < 2) {
       return reply.status(400).send({ error: 'Please upload at least 2 PDF files to merge.' });
     }
