@@ -29,9 +29,10 @@ export const compressRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     const validated = CompressRequestSchema.safeParse(fields);
-    const options = validated.success
-      ? validated.data
-      : { level: 'medium' as const, targetSizeMB: undefined };
+    if (!validated.success) {
+      return reply.status(400).send({ error: 'Invalid compression parameters.' });
+    }
+    const options = validated.data;
 
     try {
       const result = await PdfCompressionEngine.compress(pdfBuffer, options);
