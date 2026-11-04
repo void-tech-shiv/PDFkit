@@ -144,7 +144,7 @@ export const manageRoutes: FastifyPluginAsync = async (fastify) => {
         } else if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
           for (const [pageKey, angle] of Object.entries(parsed as Record<string, unknown>)) {
             const pageIndex = Number(pageKey);
-            if (!/^\\d+$/.test(pageKey) || !Number.isInteger(pageIndex) ||
+            if (!/^\d+$/.test(pageKey) || !Number.isInteger(pageIndex) ||
                 pageIndex < 0 || pageIndex >= totalPages || !isValidRotationAngle(angle)) {
               return reply.status(400).send({ error: 'Rotation map contains an invalid page index or angle.' });
             }
