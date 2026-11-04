@@ -20,5 +20,5 @@ export function buildAttachmentDisposition(input: string, fallback = 'download')
     '%' + char.charCodeAt(0).toString(16).toUpperCase()
   );
 
-  return \`attachment; filename="\${asciiFallback}"; filename*=UTF-8''\${encoded}\`;
+  return 'attachment; filename="' + asciiFallback + '"; filename*=UTF-8\\'\\'' + encoded;
 }
