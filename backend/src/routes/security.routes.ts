@@ -42,7 +42,7 @@ export const securityRoutes: FastifyPluginAsync = async (fastify) => {
         .send(protectedPdf);
     } catch (err: any) {
       fastify.log.error(err);
-      return reply.status(500).send({ error: 'Failed to protect PDF: ' + err.message });
+      return reply.status(500).send({ error: 'Failed to protect PDF. Please try again.' });
     }
   });
 
@@ -114,7 +114,7 @@ export const securityRoutes: FastifyPluginAsync = async (fastify) => {
         .send(watermarked);
     } catch (err: any) {
       fastify.log.error(err);
-      return reply.status(500).send({ error: 'Failed to apply watermark: ' + err.message });
+      return reply.status(500).send({ error: 'Failed to apply watermark. Please try again.' });
     }
   });
 
@@ -176,7 +176,7 @@ export const securityRoutes: FastifyPluginAsync = async (fastify) => {
         .send(signedPdf);
     } catch (err: any) {
       fastify.log.error(err);
-      return reply.status(500).send({ error: 'Failed to apply signature: ' + err.message });
+      return reply.status(500).send({ error: 'Failed to apply signature. Please try again.' });
     }
   });
 };
