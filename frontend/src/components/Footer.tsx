@@ -23,7 +23,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             </p>
             <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
               <Shield className="w-4 h-4 text-emerald-500" />
-              <span>Files automatically cleaned within 15 minutes.</span>
+              <span>Temporary files are cleaned up where used; hosting retention may vary.</span>
             </div>
           </div>
 
